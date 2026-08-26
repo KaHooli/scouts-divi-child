@@ -5,11 +5,11 @@ Update URI: https://github.com/KaHooli/scouts-divi-child
 Description: Reusable Divi child theme with Scouts Australia-inspired overlay navigation, search, action buttons and footer.
 Author: West Centenary Scout Group
 Template: Divi
-Version: 1.3.7
+Version: 1.3.8
 Text Domain: scouts-group-divi
 License: GPL-2.0-or-later
 */
-:root{--sgd-navy:#222d65;--sgd-blue:#3e6397;--sgd-purple:#622599;--sgd-magenta:#c7197d;--sgd-gold:#f5b335;--sgd-white:#fff;--sgd-max:1180px}
+:root{--sgd-navy:#28265c;--sgd-blue:#3d5c93;--sgd-purple:#83358c;--sgd-magenta:#a22237;--sgd-gold:#ffc62e;--sgd-white:#fff;--sgd-max:1180px}
 body{font-family:"Nunito Sans",Helvetica,Arial,sans-serif;color:var(--sgd-navy)}
 #main-header,#top-header,#main-footer{display:none!important}#page-container{padding-top:0!important;margin-top:0!important}
 .sgd-skip{position:absolute;left:-9999px;z-index:100002;background:#fff;color:#111;padding:.75rem}.sgd-skip:focus{left:.5rem;top:.5rem}
