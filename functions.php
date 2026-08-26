@@ -1,6 +1,8 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.1.0');
+define('SGD_VERSION', '1.2.0');
+define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
+define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('divi-parent', get_template_directory_uri() . '/style.css', [], defined('ET_CORE_VERSION') ? ET_CORE_VERSION : null);
@@ -100,3 +102,75 @@ function sgd_render_footer() {
     <?php
 }
 add_action('wp_footer','sgd_render_footer',5);
+
+/**
+ * Return the latest public GitHub release in a WordPress-friendly shape.
+ *
+ * Results are cached to avoid consuming GitHub's anonymous API allowance.
+ */
+function sgd_latest_release() {
+    $cached = get_site_transient('sgd_latest_release');
+    if (false !== $cached) return $cached;
+
+    $response = wp_remote_get(SGD_RELEASES_API, [
+        'timeout' => 10,
+        'redirection' => 3,
+        'headers' => [
+            'Accept' => 'application/vnd.github+json',
+            'User-Agent' => 'scouts-divi-child/' . SGD_VERSION . '; ' . home_url('/'),
+            'X-GitHub-Api-Version' => '2022-11-28',
+        ],
+    ]);
+    if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
+        set_site_transient('sgd_latest_release', [], HOUR_IN_SECONDS);
+        return [];
+    }
+
+    $release = json_decode(wp_remote_retrieve_body($response), true);
+    if (!is_array($release) || empty($release['tag_name']) || !empty($release['draft']) || !empty($release['prerelease'])) {
+        set_site_transient('sgd_latest_release', [], HOUR_IN_SECONDS);
+        return [];
+    }
+
+    $package = '';
+    foreach (($release['assets'] ?? []) as $asset) {
+        $name = (string)($asset['name'] ?? '');
+        if (str_ends_with(strtolower($name), '.zip') && str_contains(strtolower($name), 'scouts-divi-child')) {
+            $package = esc_url_raw($asset['browser_download_url'] ?? '');
+            break;
+        }
+    }
+    $data = [
+        'version' => ltrim((string)$release['tag_name'], 'vV'),
+        'url' => esc_url_raw($release['html_url'] ?? SGD_UPDATE_URI . '/releases'),
+        'package' => $package,
+        'published_at' => sanitize_text_field($release['published_at'] ?? ''),
+    ];
+    set_site_transient('sgd_latest_release', $data, 6 * HOUR_IN_SECONDS);
+    return $data;
+}
+
+/**
+ * Integrate with WordPress 6.1+'s Update URI mechanism.
+ */
+add_filter('update_themes_github.com', function ($update, $theme_data, $theme_stylesheet) {
+    if ('scouts-divi-child' !== $theme_stylesheet) return $update;
+    $release = sgd_latest_release();
+    if (empty($release['version'])) return false;
+
+    return [
+        'id' => SGD_UPDATE_URI,
+        'theme' => $theme_stylesheet,
+        'version' => $release['version'],
+        'url' => $release['url'],
+        'package' => $release['package'],
+        'tested' => '6.8',
+        'requires_php' => '8.0',
+        'autoupdate' => false,
+    ];
+}, 10, 3);
+
+// Clear our release cache whenever WordPress explicitly refreshes theme data.
+add_action('delete_site_transient_update_themes', function () {
+    delete_site_transient('sgd_latest_release');
+});
