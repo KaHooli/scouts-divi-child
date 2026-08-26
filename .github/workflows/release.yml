@@ -78,6 +78,8 @@ jobs:
           plugin="$RUNNER_TEMP/scouts-divi-child-updater"
           mkdir -p "$plugin"
           cp .github/updater-plugin/scouts-divi-child-updater.php "$plugin/"
+          sed -i "s/^ \* Version: .*/ * Version: $VERSION/" "$plugin/scouts-divi-child-updater.php"
+          sed -i "s/define('SGDUP_VERSION', '[^']*');/define('SGDUP_VERSION', '$VERSION');/" "$plugin/scouts-divi-child-updater.php"
           cd "$RUNNER_TEMP"
           zip -qr "$GITHUB_WORKSPACE/scouts-divi-child-updater-v$VERSION.zip" scouts-divi-child-updater
           unzip -t "$GITHUB_WORKSPACE/scouts-divi-child-updater-v$VERSION.zip"
