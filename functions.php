@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.3.6');
+define('SGD_VERSION', '1.3.7');
 define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
 define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
@@ -144,7 +144,7 @@ function sgd_render_footer() {
     <footer class="sgd-footer" role="contentinfo">
       <div class="sgd-footer-top"><div class="sgd-footer-grid">
         <section><h2><?php esc_html_e('Our Group','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_one',[['About Us',home_url('/about/')],['Our Sections',home_url('/sections/')],['News & Events',home_url('/news/')],['Contact Us',sgd_mod('contact_url',home_url('/contact/'))]]); ?></section>
-        <section><h2><?php esc_html_e('Scouting','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_two',[['Scouts Queensland','https://scoutsqld.com.au/'],['Scouts Australia','https://scouts.com.au/'],['Scout Shop','https://scoutshop.com.au/'],['Terrain','https://terrain.scouts.com.au/'],['Training','https://training.scouts.com.au/']]); ?></section>
+        <section><h2><?php esc_html_e('Scouting','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_two',[['Scouts Queensland','https://scoutsqld.com.au/'],['Scouts Australia','https://scouts.com.au/'],['Scout Shop','https://scoutshop.com.au/'],['Scouts | Terrain','https://terrain.scouts.com.au/'],['Training','https://training.scouts.com.au/']]); ?></section>
         <section><h2><?php esc_html_e('Important Links','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_three',[['Child Safety','https://scoutsqld.com.au/child-protection-safety/'],['Join Scouts',sgd_mod('join_url',home_url('/join/'))],['Members',sgd_mod('members_url','https://scoutsqld.com.au/')],['Privacy',home_url('/privacy-policy/')]]); ?></section>
         <section><h2><?php esc_html_e('Follow Us','scouts-group-divi'); ?></h2><div class="sgd-socials"><?php foreach($socials as $key=>$label) if($url=sgd_mod($key)) echo '<a href="'.esc_url($url).'" rel="noopener" target="_blank">'.esc_html($label).'</a>'; ?></div><?php if($phone=sgd_mod('phone')):?><h2 class="sgd-enquiries"><?php esc_html_e('Membership Enquiries','scouts-group-divi'); ?></h2><p><?php echo esc_html($phone); ?></p><?php endif; ?></section>
       </div></div>
