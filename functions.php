@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.3.5');
+define('SGD_VERSION', '1.3.6');
 define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
 define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
@@ -77,6 +77,7 @@ add_action('customize_register', function ($wp_customize) {
     $fields = [
         'group_name'=>['Group name','West Centenary Scout Group','sanitize_text_field'],
         'region'=>['District / region','John Oxley District · Brisbane South Region','sanitize_text_field'],
+        'branch'=>['Branch or State/Territory','Scouts Queensland','sanitize_text_field'],
         'join_url'=>['Join / enquire URL',home_url('/join/'),'esc_url_raw'],
         'members_url'=>['Members URL','https://scoutsqld.com.au/','esc_url_raw'],
         'donate_url'=>['Donate URL','','esc_url_raw'],
@@ -97,7 +98,7 @@ add_action('customize_register', function ($wp_customize) {
 
 function sgd_render_header() {
     if (is_admin()) return;
-    $name=sgd_mod('group_name',get_bloginfo('name')); $region=sgd_mod('region');
+    $name=sgd_mod('group_name',get_bloginfo('name')); $region=sgd_mod('region'); $branch=sgd_mod('branch','Scouts Queensland');
     $logo_id=absint(sgd_mod('branch_logo_'.sgd_active_scheme()));
     if(!$logo_id) $logo_id=absint(sgd_mod('logo'));
     ?>
@@ -107,7 +108,7 @@ function sgd_render_header() {
         <button class="sgd-menu-toggle" type="button" aria-expanded="false" aria-controls="sgd-overlay"><span class="sgd-burger" aria-hidden="true"><i></i><i></i><i></i></span><span><?php esc_html_e('Menu','scouts-group-divi'); ?></span></button>
         <a class="sgd-brand" href="<?php echo esc_url(home_url('/')); ?>">
           <?php if($logo_id) echo wp_get_attachment_image($logo_id,'medium',false,['class'=>'sgd-logo','alt'=>'']); ?>
-          <span class="sgd-brand-text"><?php echo esc_html($name); ?><small><?php echo esc_html($region); ?></small></span>
+          <span class="sgd-brand-text"><?php echo esc_html($name); ?><small><?php echo esc_html($region); ?><?php if($branch): ?><br><?php echo esc_html($branch); ?><?php endif; ?></small></span>
         </a>
         <div class="sgd-controls"><?php get_search_form(); ?><div class="sgd-actions">
           <?php if($url=sgd_mod('donate_url')):?><a class="sgd-action sgd-donate" href="<?php echo esc_url($url); ?>"><?php esc_html_e('Donate','scouts-group-divi'); ?></a><?php endif; ?>
@@ -147,7 +148,7 @@ function sgd_render_footer() {
         <section><h2><?php esc_html_e('Important Links','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_three',[['Child Safety','https://scoutsqld.com.au/child-protection-safety/'],['Join Scouts',sgd_mod('join_url',home_url('/join/'))],['Members',sgd_mod('members_url','https://scoutsqld.com.au/')],['Privacy',home_url('/privacy-policy/')]]); ?></section>
         <section><h2><?php esc_html_e('Follow Us','scouts-group-divi'); ?></h2><div class="sgd-socials"><?php foreach($socials as $key=>$label) if($url=sgd_mod($key)) echo '<a href="'.esc_url($url).'" rel="noopener" target="_blank">'.esc_html($label).'</a>'; ?></div><?php if($phone=sgd_mod('phone')):?><h2 class="sgd-enquiries"><?php esc_html_e('Membership Enquiries','scouts-group-divi'); ?></h2><p><?php echo esc_html($phone); ?></p><?php endif; ?></section>
       </div></div>
-      <div class="sgd-footer-bottom"><div class="sgd-footer-bottom-inner"><div><h2><?php esc_html_e('About Our Group','scouts-group-divi'); ?></h2><p><?php echo esc_html(sgd_mod('footer_about')); ?></p></div><div class="sgd-footer-identity"><strong><?php echo esc_html(sgd_mod('group_name',get_bloginfo('name'))); ?></strong><span><?php echo esc_html(sgd_mod('region')); ?></span></div></div></div>
+      <div class="sgd-footer-bottom"><div class="sgd-footer-bottom-inner"><div><h2><?php esc_html_e('About Our Group','scouts-group-divi'); ?></h2><p><?php echo esc_html(sgd_mod('footer_about')); ?></p></div><div class="sgd-footer-identity"><strong><?php echo esc_html(sgd_mod('group_name',get_bloginfo('name'))); ?></strong><span><?php echo esc_html(sgd_mod('region')); ?><?php if($branch=sgd_mod('branch','Scouts Queensland')): ?><br><?php echo esc_html($branch); ?><?php endif; ?></span></div></div></div>
     </footer>
     <?php
 }
