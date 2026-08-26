@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '0.1.0');
+define('SGD_VERSION', '1.1.0');
 
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('divi-parent', get_template_directory_uri() . '/style.css', [], defined('ET_CORE_VERSION') ? ET_CORE_VERSION : null);
