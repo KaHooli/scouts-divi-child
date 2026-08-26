@@ -1,0 +1,89 @@
+name: Publish theme release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - style.css
+      - functions.php
+      - searchform.php
+      - assets/**
+      - README.md
+      - LICENSE
+      - .github/workflows/release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: theme-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Read and validate theme version
+        id: version
+        shell: bash
+        run: |
+          version="$(sed -n 's/^[[:space:]]*Version:[[:space:]]*//p' style.css | head -n 1 | tr -d '\r')"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid or missing Version header: $version" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether release already exists
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        shell: bash
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build WordPress theme ZIP
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          staging="$RUNNER_TEMP/scouts-divi-child"
+          mkdir -p "$staging"
+          rsync -a ./ "$staging/" \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '*.zip'
+          cd "$RUNNER_TEMP"
+          zip -qr "$GITHUB_WORKSPACE/scouts-divi-child-v$VERSION.zip" scouts-divi-child
+          unzip -t "$GITHUB_WORKSPACE/scouts-divi-child-v$VERSION.zip"
+
+      - name: Create tag and GitHub release
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          gh release create "$TAG" "scouts-divi-child-v$VERSION.zip" \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --generate-notes \
+            --latest
+
+      - name: Release already exists
+        if: steps.existing.outputs.exists == 'true'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: echo "Release $TAG already exists; nothing to publish."
