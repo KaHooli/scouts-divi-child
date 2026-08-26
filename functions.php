@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.3.7');
+define('SGD_VERSION', '1.3.8');
 define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
 define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
@@ -25,16 +25,19 @@ function sgd_mod($key, $fallback = '') {
 }
 
 function sgd_colour_schemes() {
+    // Official Scouts Australia Brand Book palettes, August 2026, pp. 21-23.
+    // Each Branch retains Australian Navy and maps its approved primary and
+    // supporting colours to the theme's functional colour roles.
     return [
-        'australia'=>['label'=>'Scouts Australia','navy'=>'#222d65','blue'=>'#3e6397','purple'=>'#622599','magenta'=>'#c7197d','gold'=>'#f5b335'],
-        'act'=>['label'=>'Australian Capital Territory','navy'=>'#4a4200','blue'=>'#776440','purple'=>'#685c04','magenta'=>'#9eb936','gold'=>'#d9ce8c'],
-        'nsw'=>['label'=>'New South Wales','navy'=>'#0b1728','blue'=>'#5a5b75','purple'=>'#262661','magenta'=>'#44c8f5','gold'=>'#e7f5fd'],
-        'nt'=>['label'=>'Northern Territory','navy'=>'#363739','blue'=>'#696969','purple'=>'#4f276f','magenta'=>'#86bd03','gold'=>'#f2b134'],
-        'qld'=>['label'=>'Queensland','navy'=>'#0a0002','blue'=>'#681e35','purple'=>'#681e35','magenta'=>'#9e3153','gold'=>'#c9a15b'],
-        'sa'=>['label'=>'South Australia','navy'=>'#193653','blue'=>'#0d6efd','purple'=>'#193653','magenta'=>'#db2b27','gold'=>'#e8e7e3'],
-        'tas'=>['label'=>'Tasmania','navy'=>'#262627','blue'=>'#353538','purple'=>'#006f51','magenta'=>'#008f69','gold'=>'#b2b2b2'],
-        'vic'=>['label'=>'Victoria','navy'=>'#18183c','blue'=>'#00335d','purple'=>'#005495','magenta'=>'#007bc3','gold'=>'#cccccc'],
-        'wa'=>['label'=>'Western Australia','navy'=>'#28265c','blue'=>'#6b7c93','purple'=>'#3d5c93','magenta'=>'#008f88','gold'=>'#d6a947'],
+        'australia'=>['label'=>'Scouts Australia','navy'=>'#28265c','blue'=>'#3d5c93','purple'=>'#83358c','magenta'=>'#a22237','gold'=>'#ffc62e'],
+        'act'=>['label'=>'Australian Capital Territory','navy'=>'#28265c','blue'=>'#c7aa2a','purple'=>'#424b2a','magenta'=>'#488729','gold'=>'#e4cc49'],
+        'nsw'=>['label'=>'New South Wales','navy'=>'#28265c','blue'=>'#44c8f5','purple'=>'#006b9e','magenta'=>'#00b5cc','gold'=>'#8ed8f8'],
+        'nt'=>['label'=>'Northern Territory','navy'=>'#28265c','blue'=>'#ef7203','purple'=>'#623318','magenta'=>'#d15c05','gold'=>'#f59d24'],
+        'qld'=>['label'=>'Queensland','navy'=>'#28265c','blue'=>'#681d34','purple'=>'#571e21','magenta'=>'#8d1f2c','gold'=>'#ea6952'],
+        'sa'=>['label'=>'South Australia','navy'=>'#28265c','blue'=>'#d20a10','purple'=>'#6e0e00','magenta'=>'#9c1006','gold'=>'#f0804e'],
+        'tas'=>['label'=>'Tasmania','navy'=>'#28265c','blue'=>'#00854c','purple'=>'#005833','magenta'=>'#006d3a','gold'=>'#a1c861'],
+        'vic'=>['label'=>'Victoria','navy'=>'#28265c','blue'=>'#16345c','purple'=>'#1e407a','magenta'=>'#095faa','gold'=>'#147bc1'],
+        'wa'=>['label'=>'Western Australia','navy'=>'#28265c','blue'=>'#fbba00','purple'=>'#000000','magenta'=>'#6d4b21','gold'=>'#d79400'],
     ];
 }
 
