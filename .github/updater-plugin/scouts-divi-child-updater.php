@@ -79,6 +79,54 @@ add_filter('update_plugins_github.com',function($update,$plugin_data,$plugin_fil
     return ['id'=>SGDUP_UPDATE_URI,'slug'=>'scouts-divi-child-updater','version'=>$release['version'],'url'=>$release['url'],'package'=>$release['updater_package'],'tested'=>'6.8','requires_php'=>'8.0'];
 },10,3);
 
+/**
+ * WordPress only renders its automatic-update control for extensions represented
+ * in the update transient. Keep an explicit current-version record there even
+ * when GitHub has no newer release.
+ */
+function sgdup_plugin_update_payload($release) {
+    return (object) [
+        'id' => SGDUP_UPDATE_URI,
+        'slug' => 'scouts-divi-child-updater',
+        'plugin' => SGDUP_PLUGIN,
+        'new_version' => $release['version'],
+        'url' => $release['url'],
+        'package' => $release['updater_package'],
+        'tested' => '6.8',
+        'requires_php' => '8.0',
+    ];
+}
+
+add_filter('site_transient_update_plugins', function ($transient) {
+    if (!is_object($transient)) $transient = new stdClass();
+    if (!isset($transient->response) || !is_array($transient->response)) $transient->response = [];
+    if (!isset($transient->no_update) || !is_array($transient->no_update)) $transient->no_update = [];
+
+    $release = sgdup_latest_release();
+    if (empty($release['version']) || empty($release['updater_package'])) return $transient;
+
+    $payload = sgdup_plugin_update_payload($release);
+    if (version_compare($release['version'], SGDUP_VERSION, '>')) {
+        $transient->response[SGDUP_PLUGIN] = $payload;
+        unset($transient->no_update[SGDUP_PLUGIN]);
+    } else {
+        $transient->no_update[SGDUP_PLUGIN] = $payload;
+        unset($transient->response[SGDUP_PLUGIN]);
+    }
+    return $transient;
+});
+
+/**
+ * Also mark support directly in the installed-plugins table. This is important
+ * on Network Admin screens before the first scheduled update check has run.
+ */
+add_filter('all_plugins', function ($plugins) {
+    if (isset($plugins[SGDUP_PLUGIN])) {
+        $plugins[SGDUP_PLUGIN]['update-supported'] = true;
+    }
+    return $plugins;
+});
+
 add_action('delete_site_transient_update_themes',function(){
     delete_site_transient('sgdup_latest_release');
 });
