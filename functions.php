@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.3.0');
+define('SGD_VERSION', '1.3.1');
 define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
 define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
@@ -214,7 +214,6 @@ add_filter('update_themes_github.com', function ($update, $theme_data, $theme_st
         'package' => $release['package'],
         'tested' => '6.8',
         'requires_php' => '8.0',
-        'autoupdate' => false,
     ];
 }, 10, 3);
 
