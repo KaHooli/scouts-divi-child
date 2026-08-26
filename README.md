@@ -33,6 +33,20 @@ Release requirements:
 The checker caches successful GitHub responses for six hours and does not
 require a GitHub access token for this public repository.
 
+### Automated publishing
+
+Every push to `main` that changes theme files runs the release workflow. The
+workflow reads the `Version` header from `style.css`; if the matching
+`vX.Y.Z` release does not already exist, it:
+
+1. validates the version,
+2. creates a WordPress-ready `scouts-divi-child` folder,
+3. builds and tests `scouts-divi-child-vX.Y.Z.zip`, and
+4. creates the Git tag and GitHub release with generated notes.
+
+Always increment `Version` in `style.css` for a new release. Keep
+`SGD_VERSION` in `functions.php` identical so browser caches are refreshed.
+
 ## Reuse
 
 No West Centenary values are hard-coded into templates other than safe Customizer defaults. Another group can replace every identity and action value without editing code.
