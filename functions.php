@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.3.3');
+define('SGD_VERSION', '1.3.4');
 define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
 define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
