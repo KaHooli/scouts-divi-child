@@ -38,6 +38,18 @@ force it on or off. On multisite installations this preference is available to
 Super Admins from **Network Admin → Themes**, not from an individual site's
 Appearance screen.
 
+### Multisite companion updater
+
+Multisite Network Admin does not load an individual site's active theme
+`functions.php` while checking network-wide theme updates. Install and
+**Network Activate** the release asset
+`scouts-divi-child-updater-vX.Y.Z.zip` once. The companion plugin registers
+the same GitHub update provider in Network Admin, after which the
+**Enable auto-updates** link is available for Scouts Group Divi.
+
+After activating the plugin, visit **Network Admin → Dashboard → Updates** and
+click **Check again** to rebuild WordPress's theme-update data.
+
 ### Automated publishing
 
 Every push to `main` that changes theme files runs the release workflow. The
@@ -47,7 +59,8 @@ workflow reads the `Version` header from `style.css`; if the matching
 1. validates the version,
 2. creates a WordPress-ready `scouts-divi-child` folder,
 3. builds and tests `scouts-divi-child-vX.Y.Z.zip`, and
-4. creates the Git tag and GitHub release with generated notes.
+4. builds the multisite updater companion plugin, and
+5. creates the Git tag and GitHub release with generated notes.
 
 Always increment `Version` in `style.css` for a new release. Keep
 `SGD_VERSION` in `functions.php` identical so browser caches are refreshed.
