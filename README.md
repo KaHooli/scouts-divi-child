@@ -55,6 +55,18 @@ No West Centenary values are hard-coded into templates other than safe Customize
 
 The theme uses Nunito Sans when available and provides an accessible search drawer, mobile navigation, visible focus states, semantic landmarks, reduced-motion support and a skip link. Official logos, Gumtree graphics and fonts are intentionally not redistributed; obtain approved assets from the Scouts Australia Brand Centre and Scouts Queensland brand resources.
 
+## Colour schemes
+
+**Appearance → Customize → Colour Schemes** provides the national Scouts
+Australia palette by default plus Branch presets for ACT, NSW, NT, Queensland,
+South Australia, Tasmania, Victoria and Western Australia. Each preset controls
+the header, overlay navigation, buttons, links and footer through CSS variables.
+
+An approved logo can be uploaded for every preset. When a preset is selected,
+its logo replaces the generic group logo automatically. Official logos and
+other trademarked Branch artwork are deliberately not bundled or hotlinked;
+site administrators should obtain current approved files from their Branch.
+
 ## Suggested menu
 
 Home; About Us; Sections; Join; News & Events; Resources; Contact.
