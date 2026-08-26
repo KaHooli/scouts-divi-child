@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.3.4');
+define('SGD_VERSION', '1.3.5');
 define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
 define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
@@ -55,9 +55,11 @@ add_filter('body_class', function ($classes) {
 });
 
 add_action('customize_register', function ($wp_customize) {
-    // Replace any earlier implementation of this theme's colour-scheme section.
+    // Replace Divi's built-in Color Schemes selector with Scout Branch palettes.
+    $wp_customize->remove_control('et_divi[color_schemes]');
+    $wp_customize->remove_section('et_color_schemes');
     $wp_customize->remove_section('sgd_colours');
-    $wp_customize->add_section('sgd_colours', [
+    $wp_customize->add_section('et_color_schemes', [
         'title'=>__('Colour Schemes','scouts-group-divi'),
         'description'=>__('Select the national or Branch (State/Territory) palette. Upload only an approved logo supplied by that Branch.','scouts-group-divi'),
         'priority'=>31,
@@ -65,11 +67,11 @@ add_action('customize_register', function ($wp_customize) {
     $choices=[];
     foreach(sgd_colour_schemes() as $slug=>$scheme) $choices[$slug]=$scheme['label'];
     $wp_customize->add_setting('sgd_colour_scheme',['default'=>'australia','sanitize_callback'=>function($value) use($choices){return isset($choices[$value])?$value:'australia';}]);
-    $wp_customize->add_control('sgd_colour_scheme',['label'=>__('Brand palette','scouts-group-divi'),'section'=>'sgd_colours','type'=>'select','choices'=>$choices]);
+    $wp_customize->add_control('sgd_colour_scheme',['label'=>__('Brand palette','scouts-group-divi'),'section'=>'et_color_schemes','type'=>'select','choices'=>$choices]);
     foreach($choices as $slug=>$label){
         $setting='sgd_branch_logo_'.$slug;
         $wp_customize->add_setting($setting,['sanitize_callback'=>'absint']);
-        $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize,$setting,['label'=>sprintf(__('%s approved logo','scouts-group-divi'),$label),'description'=>__('Optional. This logo is used automatically when this scheme is selected.','scouts-group-divi'),'section'=>'sgd_colours','mime_type'=>'image']));
+        $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize,$setting,['label'=>sprintf(__('%s approved logo','scouts-group-divi'),$label),'description'=>__('Optional. This logo is used automatically when this scheme is selected.','scouts-group-divi'),'section'=>'et_color_schemes','mime_type'=>'image']));
     }
     $wp_customize->add_section('sgd_group', ['title'=>__('Scout Group Details','scouts-group-divi'),'description'=>__('Configure this reusable theme for your local Scout Group.','scouts-group-divi'),'priority'=>30]);
     $fields = [
@@ -91,7 +93,7 @@ add_action('customize_register', function ($wp_customize) {
     }
     $wp_customize->add_setting('sgd_logo', ['sanitize_callback'=>'absint']);
     $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize,'sgd_logo',['label'=>__('Approved group logo','scouts-group-divi'),'section'=>'sgd_group','mime_type'=>'image']));
-});
+}, 100);
 
 function sgd_render_header() {
     if (is_admin()) return;
