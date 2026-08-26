@@ -15,6 +15,24 @@ A reusable Divi child theme for Australian Scout Groups. It is inspired by the i
 3. Open **Appearance → Customize → Scout Group Details** and set the group name, district/region, approved logo, and action URLs.
 4. Create and assign a menu to **Scout Group Primary Menu**.
 
+## Updates
+
+The theme uses WordPress's native `Update URI` mechanism and checks the latest
+published GitHub release. When a release tag is newer than the installed theme's
+`Version`, WordPress shows it under **Dashboard → Updates** and allows a normal
+one-click theme update.
+
+Release requirements:
+
+- Use a semantic tag such as `v1.2.1`.
+- The tag's version must be higher than the `Version` in `style.css`.
+- Attach a ZIP whose filename contains `scouts-divi-child`.
+- The ZIP must contain one top-level folder named `scouts-divi-child`.
+- Drafts and prereleases are intentionally ignored.
+
+The checker caches successful GitHub responses for six hours and does not
+require a GitHub access token for this public repository.
+
 ## Reuse
 
 No West Centenary values are hard-coded into templates other than safe Customizer defaults. Another group can replace every identity and action value without editing code.
