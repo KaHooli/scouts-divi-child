@@ -33,6 +33,11 @@ Release requirements:
 The checker caches successful GitHub responses for six hours and does not
 require a GitHub access token for this public repository.
 
+WordPress controls the **Enable auto-updates** preference; the theme does not
+force it on or off. On multisite installations this preference is available to
+Super Admins from **Network Admin → Themes**, not from an individual site's
+Appearance screen.
+
 ### Automated publishing
 
 Every push to `main` that changes theme files runs the release workflow. The
