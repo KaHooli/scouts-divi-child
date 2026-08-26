@@ -50,6 +50,11 @@ the same GitHub update provider in Network Admin, after which the
 After activating the plugin, visit **Network Admin → Dashboard → Updates** and
 click **Check again** to rebuild WordPress's theme-update data.
 
+The companion plugin also uses WordPress's native plugin `Update URI`
+mechanism. Its own **Enable auto-updates** link appears in **Network Admin →
+Plugins**, and future GitHub releases update the theme and updater plugin
+independently.
+
 ### Automated publishing
 
 Every push to `main` that changes theme files runs the release workflow. The
