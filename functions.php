@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.4.2');
+define('SGD_VERSION', '1.4.3');
 define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
 define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
@@ -105,6 +105,8 @@ function sgd_render_header() {
     $name=sgd_mod('group_name',get_bloginfo('name')); $region=sgd_mod('region');
     $logo_id=absint(sgd_mod('branch_logo_'.sgd_active_scheme()));
     if(!$logo_id) $logo_id=absint(sgd_mod('logo'));
+    $donate_url=sgd_mod('donate_url');
+    if(!$donate_url) $donate_url=home_url('/donate/');
     ?>
     <a class="sgd-skip" href="#main-content"><?php esc_html_e('Skip to content','scouts-group-divi'); ?></a>
     <header class="sgd-header" role="banner">
@@ -114,10 +116,10 @@ function sgd_render_header() {
           <?php if($logo_id) echo wp_get_attachment_image($logo_id,'medium',false,['class'=>'sgd-logo','alt'=>'']); ?>
           <span class="sgd-brand-text"><?php echo esc_html($name); ?><small><?php echo esc_html($region); ?></small></span>
         </a>
-        <div class="sgd-controls"><?php get_search_form(); ?><div class="sgd-control-row"><label class="sgd-mode-control"><span class="screen-reader-text"><?php esc_html_e('Colour mode','scouts-group-divi'); ?></span><select class="sgd-mode-select" aria-label="<?php esc_attr_e('Colour mode','scouts-group-divi'); ?>"><option value="auto"><?php esc_html_e('Auto','scouts-group-divi'); ?></option><option value="light"><?php esc_html_e('Light','scouts-group-divi'); ?></option><option value="dark"><?php esc_html_e('Dark','scouts-group-divi'); ?></option></select></label><div class="sgd-actions">
-          <?php if($url=sgd_mod('donate_url')):?><a class="sgd-action sgd-donate" href="<?php echo esc_url($url); ?>"><?php esc_html_e('Donate','scouts-group-divi'); ?></a><?php endif; ?>
+        <div class="sgd-controls"><div class="sgd-control-row"><?php get_search_form(); ?><label class="sgd-mode-control"><span class="screen-reader-text"><?php esc_html_e('Colour mode','scouts-group-divi'); ?></span><select class="sgd-mode-select" aria-label="<?php esc_attr_e('Colour mode','scouts-group-divi'); ?>"><option value="auto"><?php esc_html_e('Auto','scouts-group-divi'); ?></option><option value="light"><?php esc_html_e('Light','scouts-group-divi'); ?></option><option value="dark"><?php esc_html_e('Dark','scouts-group-divi'); ?></option></select></label></div><div class="sgd-actions">
+          <a class="sgd-action sgd-donate" href="<?php echo esc_url($donate_url); ?>"><?php esc_html_e('Donate','scouts-group-divi'); ?></a>
           <a class="sgd-action sgd-join" href="<?php echo esc_url(sgd_mod('join_url',home_url('/join/'))); ?>"><?php esc_html_e('Join Now','scouts-group-divi'); ?></a>
-        </div></div></div>
+        </div></div>
         <button class="sgd-search-toggle" type="button" aria-expanded="false" aria-controls="sgd-mobile-search" aria-label="<?php esc_attr_e('Search','scouts-group-divi'); ?>">⌕</button>
       </div>
       <div id="sgd-mobile-search" class="sgd-mobile-search" aria-hidden="true"><?php get_search_form(); ?></div>
