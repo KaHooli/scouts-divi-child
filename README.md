@@ -90,6 +90,12 @@ its logo replaces the generic group logo automatically. Official logos and
 other trademarked Branch artwork are deliberately not bundled or hotlinked;
 site administrators should obtain current approved files from their Branch.
 
+## Light and dark modes
+
+The header includes an **Auto / Light / Dark** appearance control. Auto follows
+the visitor's device setting. Light and Dark choices are saved locally in the
+browser and restored before the page is displayed.
+
 ## Suggested menu
 
 Home; About Us; Sections; Join; News & Events; Resources; Contact.

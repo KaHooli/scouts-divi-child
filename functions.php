@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
-define('SGD_VERSION', '1.3.8');
+define('SGD_VERSION', '1.4.0');
 define('SGD_UPDATE_URI', 'https://github.com/KaHooli/scouts-divi-child');
 define('SGD_RELEASES_API', 'https://api.github.com/repos/KaHooli/scouts-divi-child/releases/latest');
 
@@ -9,6 +9,13 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('sgd-theme', get_stylesheet_uri(), ['divi-parent'], SGD_VERSION);
     wp_enqueue_script('sgd-header', get_stylesheet_directory_uri() . '/assets/js/header.js', [], SGD_VERSION, true);
 });
+
+// Apply the saved colour mode before the page paints to avoid a light/dark flash.
+add_action('wp_head', function () {
+    ?>
+    <script id="sgd-colour-mode-init">(function(){try{var m=localStorage.getItem('sgd-colour-mode');document.documentElement.dataset.sgdMode=/^(light|dark)$/.test(m)?m:'auto'}catch(e){document.documentElement.dataset.sgdMode='auto'}})();</script>
+    <?php
+}, 0);
 
 add_action('after_setup_theme', function () {
     register_nav_menus([
@@ -25,19 +32,16 @@ function sgd_mod($key, $fallback = '') {
 }
 
 function sgd_colour_schemes() {
-    // Official Scouts Australia Brand Book palettes, August 2026, pp. 21-23.
-    // Each Branch retains Australian Navy and maps its approved primary and
-    // supporting colours to the theme's functional colour roles.
     return [
-        'australia'=>['label'=>'Scouts Australia','navy'=>'#28265c','blue'=>'#3d5c93','purple'=>'#83358c','magenta'=>'#a22237','gold'=>'#ffc62e'],
-        'act'=>['label'=>'Australian Capital Territory','navy'=>'#28265c','blue'=>'#c7aa2a','purple'=>'#424b2a','magenta'=>'#488729','gold'=>'#e4cc49'],
-        'nsw'=>['label'=>'New South Wales','navy'=>'#28265c','blue'=>'#44c8f5','purple'=>'#006b9e','magenta'=>'#00b5cc','gold'=>'#8ed8f8'],
-        'nt'=>['label'=>'Northern Territory','navy'=>'#28265c','blue'=>'#ef7203','purple'=>'#623318','magenta'=>'#d15c05','gold'=>'#f59d24'],
-        'qld'=>['label'=>'Queensland','navy'=>'#28265c','blue'=>'#681d34','purple'=>'#571e21','magenta'=>'#8d1f2c','gold'=>'#ea6952'],
-        'sa'=>['label'=>'South Australia','navy'=>'#28265c','blue'=>'#d20a10','purple'=>'#6e0e00','magenta'=>'#9c1006','gold'=>'#f0804e'],
-        'tas'=>['label'=>'Tasmania','navy'=>'#28265c','blue'=>'#00854c','purple'=>'#005833','magenta'=>'#006d3a','gold'=>'#a1c861'],
-        'vic'=>['label'=>'Victoria','navy'=>'#28265c','blue'=>'#16345c','purple'=>'#1e407a','magenta'=>'#095faa','gold'=>'#147bc1'],
-        'wa'=>['label'=>'Western Australia','navy'=>'#28265c','blue'=>'#fbba00','purple'=>'#000000','magenta'=>'#6d4b21','gold'=>'#d79400'],
+        'australia'=>['label'=>'Scouts Australia','navy'=>'#222d65','blue'=>'#3e6397','purple'=>'#622599','magenta'=>'#c7197d','gold'=>'#f5b335'],
+        'act'=>['label'=>'Australian Capital Territory','navy'=>'#4a4200','blue'=>'#776440','purple'=>'#685c04','magenta'=>'#9eb936','gold'=>'#d9ce8c'],
+        'nsw'=>['label'=>'New South Wales','navy'=>'#0b1728','blue'=>'#5a5b75','purple'=>'#262661','magenta'=>'#44c8f5','gold'=>'#e7f5fd'],
+        'nt'=>['label'=>'Northern Territory','navy'=>'#363739','blue'=>'#696969','purple'=>'#4f276f','magenta'=>'#86bd03','gold'=>'#f2b134'],
+        'qld'=>['label'=>'Queensland','navy'=>'#0a0002','blue'=>'#681e35','purple'=>'#681e35','magenta'=>'#9e3153','gold'=>'#c9a15b'],
+        'sa'=>['label'=>'South Australia','navy'=>'#193653','blue'=>'#0d6efd','purple'=>'#193653','magenta'=>'#db2b27','gold'=>'#e8e7e3'],
+        'tas'=>['label'=>'Tasmania','navy'=>'#262627','blue'=>'#353538','purple'=>'#006f51','magenta'=>'#008f69','gold'=>'#b2b2b2'],
+        'vic'=>['label'=>'Victoria','navy'=>'#18183c','blue'=>'#00335d','purple'=>'#005495','magenta'=>'#007bc3','gold'=>'#cccccc'],
+        'wa'=>['label'=>'Western Australia','navy'=>'#28265c','blue'=>'#6b7c93','purple'=>'#3d5c93','magenta'=>'#008f88','gold'=>'#d6a947'],
     ];
 }
 
@@ -58,11 +62,9 @@ add_filter('body_class', function ($classes) {
 });
 
 add_action('customize_register', function ($wp_customize) {
-    // Replace Divi's built-in Color Schemes selector with Scout Branch palettes.
-    $wp_customize->remove_control('et_divi[color_schemes]');
-    $wp_customize->remove_section('et_color_schemes');
+    // Replace any earlier implementation of this theme's colour-scheme section.
     $wp_customize->remove_section('sgd_colours');
-    $wp_customize->add_section('et_color_schemes', [
+    $wp_customize->add_section('sgd_colours', [
         'title'=>__('Colour Schemes','scouts-group-divi'),
         'description'=>__('Select the national or Branch (State/Territory) palette. Upload only an approved logo supplied by that Branch.','scouts-group-divi'),
         'priority'=>31,
@@ -70,17 +72,16 @@ add_action('customize_register', function ($wp_customize) {
     $choices=[];
     foreach(sgd_colour_schemes() as $slug=>$scheme) $choices[$slug]=$scheme['label'];
     $wp_customize->add_setting('sgd_colour_scheme',['default'=>'australia','sanitize_callback'=>function($value) use($choices){return isset($choices[$value])?$value:'australia';}]);
-    $wp_customize->add_control('sgd_colour_scheme',['label'=>__('Brand palette','scouts-group-divi'),'section'=>'et_color_schemes','type'=>'select','choices'=>$choices]);
+    $wp_customize->add_control('sgd_colour_scheme',['label'=>__('Brand palette','scouts-group-divi'),'section'=>'sgd_colours','type'=>'select','choices'=>$choices]);
     foreach($choices as $slug=>$label){
         $setting='sgd_branch_logo_'.$slug;
         $wp_customize->add_setting($setting,['sanitize_callback'=>'absint']);
-        $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize,$setting,['label'=>sprintf(__('%s approved logo','scouts-group-divi'),$label),'description'=>__('Optional. This logo is used automatically when this scheme is selected.','scouts-group-divi'),'section'=>'et_color_schemes','mime_type'=>'image']));
+        $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize,$setting,['label'=>sprintf(__('%s approved logo','scouts-group-divi'),$label),'description'=>__('Optional. This logo is used automatically when this scheme is selected.','scouts-group-divi'),'section'=>'sgd_colours','mime_type'=>'image']));
     }
     $wp_customize->add_section('sgd_group', ['title'=>__('Scout Group Details','scouts-group-divi'),'description'=>__('Configure this reusable theme for your local Scout Group.','scouts-group-divi'),'priority'=>30]);
     $fields = [
         'group_name'=>['Group name','West Centenary Scout Group','sanitize_text_field'],
         'region'=>['District / region','John Oxley District · Brisbane South Region','sanitize_text_field'],
-        'branch'=>['Branch or State/Territory','Scouts Queensland','sanitize_text_field'],
         'join_url'=>['Join / enquire URL',home_url('/join/'),'esc_url_raw'],
         'members_url'=>['Members URL','https://scoutsqld.com.au/','esc_url_raw'],
         'donate_url'=>['Donate URL','','esc_url_raw'],
@@ -97,11 +98,11 @@ add_action('customize_register', function ($wp_customize) {
     }
     $wp_customize->add_setting('sgd_logo', ['sanitize_callback'=>'absint']);
     $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize,'sgd_logo',['label'=>__('Approved group logo','scouts-group-divi'),'section'=>'sgd_group','mime_type'=>'image']));
-}, 100);
+});
 
 function sgd_render_header() {
     if (is_admin()) return;
-    $name=sgd_mod('group_name',get_bloginfo('name')); $region=sgd_mod('region'); $branch=sgd_mod('branch','Scouts Queensland');
+    $name=sgd_mod('group_name',get_bloginfo('name')); $region=sgd_mod('region');
     $logo_id=absint(sgd_mod('branch_logo_'.sgd_active_scheme()));
     if(!$logo_id) $logo_id=absint(sgd_mod('logo'));
     ?>
@@ -111,12 +112,12 @@ function sgd_render_header() {
         <button class="sgd-menu-toggle" type="button" aria-expanded="false" aria-controls="sgd-overlay"><span class="sgd-burger" aria-hidden="true"><i></i><i></i><i></i></span><span><?php esc_html_e('Menu','scouts-group-divi'); ?></span></button>
         <a class="sgd-brand" href="<?php echo esc_url(home_url('/')); ?>">
           <?php if($logo_id) echo wp_get_attachment_image($logo_id,'medium',false,['class'=>'sgd-logo','alt'=>'']); ?>
-          <span class="sgd-brand-text"><?php echo esc_html($name); ?><small><?php echo esc_html($region); ?><?php if($branch): ?><br><?php echo esc_html($branch); ?><?php endif; ?></small></span>
+          <span class="sgd-brand-text"><?php echo esc_html($name); ?><small><?php echo esc_html($region); ?></small></span>
         </a>
-        <div class="sgd-controls"><?php get_search_form(); ?><div class="sgd-actions">
+        <div class="sgd-controls"><?php get_search_form(); ?><div class="sgd-control-row"><label class="sgd-mode-control"><span class="screen-reader-text"><?php esc_html_e('Colour mode','scouts-group-divi'); ?></span><select class="sgd-mode-select" aria-label="<?php esc_attr_e('Colour mode','scouts-group-divi'); ?>"><option value="auto"><?php esc_html_e('Auto','scouts-group-divi'); ?></option><option value="light"><?php esc_html_e('Light','scouts-group-divi'); ?></option><option value="dark"><?php esc_html_e('Dark','scouts-group-divi'); ?></option></select></label><div class="sgd-actions">
           <?php if($url=sgd_mod('donate_url')):?><a class="sgd-action sgd-donate" href="<?php echo esc_url($url); ?>"><?php esc_html_e('Donate','scouts-group-divi'); ?></a><?php endif; ?>
           <a class="sgd-action sgd-join" href="<?php echo esc_url(sgd_mod('join_url',home_url('/join/'))); ?>"><?php esc_html_e('Join Now','scouts-group-divi'); ?></a>
-        </div></div>
+        </div></div></div>
         <button class="sgd-search-toggle" type="button" aria-expanded="false" aria-controls="sgd-mobile-search" aria-label="<?php esc_attr_e('Search','scouts-group-divi'); ?>">⌕</button>
       </div>
       <div id="sgd-mobile-search" class="sgd-mobile-search" aria-hidden="true"><?php get_search_form(); ?></div>
@@ -147,11 +148,11 @@ function sgd_render_footer() {
     <footer class="sgd-footer" role="contentinfo">
       <div class="sgd-footer-top"><div class="sgd-footer-grid">
         <section><h2><?php esc_html_e('Our Group','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_one',[['About Us',home_url('/about/')],['Our Sections',home_url('/sections/')],['News & Events',home_url('/news/')],['Contact Us',sgd_mod('contact_url',home_url('/contact/'))]]); ?></section>
-        <section><h2><?php esc_html_e('Scouting','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_two',[['Scouts Queensland','https://scoutsqld.com.au/'],['Scouts Australia','https://scouts.com.au/'],['Scout Shop','https://scoutshop.com.au/'],['Scouts | Terrain','https://terrain.scouts.com.au/'],['Training','https://training.scouts.com.au/']]); ?></section>
+        <section><h2><?php esc_html_e('Scouting','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_two',[['Scouts Queensland','https://scoutsqld.com.au/'],['Scouts Australia','https://scouts.com.au/'],['Scout Shop','https://scoutshop.com.au/'],['Terrain','https://terrain.scouts.com.au/'],['Training','https://training.scouts.com.au/']]); ?></section>
         <section><h2><?php esc_html_e('Important Links','scouts-group-divi'); ?></h2><?php sgd_footer_menu('scout_group_footer_three',[['Child Safety','https://scoutsqld.com.au/child-protection-safety/'],['Join Scouts',sgd_mod('join_url',home_url('/join/'))],['Members',sgd_mod('members_url','https://scoutsqld.com.au/')],['Privacy',home_url('/privacy-policy/')]]); ?></section>
         <section><h2><?php esc_html_e('Follow Us','scouts-group-divi'); ?></h2><div class="sgd-socials"><?php foreach($socials as $key=>$label) if($url=sgd_mod($key)) echo '<a href="'.esc_url($url).'" rel="noopener" target="_blank">'.esc_html($label).'</a>'; ?></div><?php if($phone=sgd_mod('phone')):?><h2 class="sgd-enquiries"><?php esc_html_e('Membership Enquiries','scouts-group-divi'); ?></h2><p><?php echo esc_html($phone); ?></p><?php endif; ?></section>
       </div></div>
-      <div class="sgd-footer-bottom"><div class="sgd-footer-bottom-inner"><div><h2><?php esc_html_e('About Our Group','scouts-group-divi'); ?></h2><p><?php echo esc_html(sgd_mod('footer_about')); ?></p></div><div class="sgd-footer-identity"><strong><?php echo esc_html(sgd_mod('group_name',get_bloginfo('name'))); ?></strong><span><?php echo esc_html(sgd_mod('region')); ?><?php if($branch=sgd_mod('branch','Scouts Queensland')): ?><br><?php echo esc_html($branch); ?><?php endif; ?></span></div></div></div>
+      <div class="sgd-footer-bottom"><div class="sgd-footer-bottom-inner"><div><h2><?php esc_html_e('About Our Group','scouts-group-divi'); ?></h2><p><?php echo esc_html(sgd_mod('footer_about')); ?></p></div><div class="sgd-footer-identity"><strong><?php echo esc_html(sgd_mod('group_name',get_bloginfo('name'))); ?></strong><span><?php echo esc_html(sgd_mod('region')); ?></span></div></div></div>
     </footer>
     <?php
 }
