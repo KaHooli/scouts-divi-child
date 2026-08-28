@@ -84,6 +84,8 @@ The theme uses Nunito Sans when available and provides an accessible search draw
 Australia palette by default plus Branch presets for ACT, NSW, NT, Queensland,
 South Australia, Tasmania, Victoria and Western Australia. Each preset controls
 the header, overlay navigation, buttons, links and footer through CSS variables.
+Palette values are taken from the Scouts Australia Brand Book, August 2026,
+pages 21-23. Every Branch preset includes the prescribed Australian Navy Blue.
 
 An approved logo can be uploaded for every preset. When a preset is selected,
 its logo replaces the generic group logo automatically. Official logos and

@@ -5,11 +5,11 @@ Update URI: https://github.com/KaHooli/scouts-divi-child
 Description: Reusable Divi child theme with Scouts Australia-inspired overlay navigation, search, action buttons and footer.
 Author: West Centenary Scout Group
 Template: Divi
-Version: 1.4.3
+Version: 1.4.4
 Text Domain: scouts-group-divi
 License: GPL-2.0-or-later
 */
-:root{--sgd-navy:#222d65;--sgd-blue:#3e6397;--sgd-purple:#622599;--sgd-magenta:#c7197d;--sgd-gold:#f5b335;--sgd-white:#fff;--sgd-max:1180px;--sgd-surface:#fff;--sgd-surface-soft:#f4f5fa;--sgd-text:var(--sgd-navy);--sgd-muted:#525b72;--sgd-border:rgba(34,45,101,.24);--sgd-pill-height:37px;--sgd-pill-radius:999px;color-scheme:light}
+:root{--sgd-navy:#28265c;--sgd-blue:#3d5c93;--sgd-purple:#83358c;--sgd-magenta:#a22237;--sgd-gold:#ffc62e;--sgd-white:#fff;--sgd-max:1180px;--sgd-surface:#fff;--sgd-surface-soft:#f4f5fa;--sgd-text:var(--sgd-navy);--sgd-muted:#525b72;--sgd-border:rgba(40,38,92,.24);--sgd-pill-height:37px;--sgd-pill-radius:999px;color-scheme:light}
 html[data-sgd-mode="dark"]{--sgd-surface:#111524;--sgd-surface-soft:#1b2033;--sgd-text:#f6f7fb;--sgd-muted:#c7cbd8;--sgd-border:rgba(255,255,255,.25);color-scheme:dark}
 body{font-family:"Nunito Sans",Helvetica,Arial,sans-serif;color:var(--sgd-text);background:var(--sgd-surface);transition:background-color .2s,color .2s}
 #main-header,#top-header,#main-footer{display:none!important}#page-container{padding-top:0!important;margin-top:0!important}
